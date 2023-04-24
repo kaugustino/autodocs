@@ -19,8 +19,9 @@ class DocstringTransformer(cst.CSTTransformer):
     def leave_ClassDef(
         self, original_node: cst.ClassDef, updated_node: cst.ClassDef
     ) -> cst.CSTNode:
+        key = tuple(self.stack)
         self.stack.pop()
-        return updated_node
+        return self.update_node_body_with_docstring(key, updated_node)
 
     def visit_FunctionDef(self, node: cst.FunctionDef) -> Optional[bool]:
         self.stack.append(node.name.value)
@@ -32,32 +33,54 @@ class DocstringTransformer(cst.CSTTransformer):
     ) -> cst.CSTNode:
         key = tuple(self.stack)
         self.stack.pop()
-        if key in self.docstrings:
-            docstring = self.docstrings[key]
-            if not docstring:
-                docstring = """EXAMPLE DOCSTRING."""  # insert openai api call
-                cst_docstring = cst.SimpleStatementLine(
-                    body=[
-                        cst.Expr(
-                            value=cst.SimpleString(
-                                value=f'"""{docstring}"""',
-                                lpar=[],
-                                rpar=[],
-                            ),
-                            semicolon=cst.MaybeSentinel.DEFAULT,
-                        ),
-                    ],
-                    leading_lines=[],
-                    trailing_whitespace=cst.TrailingWhitespace(
-                        whitespace=cst.SimpleWhitespace(
-                            value="",
-                        ),
-                        comment=None,
-                        newline=cst.Newline(
-                            value=None,
-                        ),
+        return self.update_node_body_with_docstring(key, updated_node)
+
+    def update_node_body_with_docstring(
+        self, key: tuple, updated_node: cst.CSTNode
+    ) -> cst.CSTNode:
+        if self.docstrings.get(key, 0) is not None:
+            return updated_node
+
+        docstring = """EXAMPLE DOCSTRING."""  # insert openai api call
+
+        cst_docstring = cst.SimpleStatementLine(
+            body=[
+                cst.Expr(
+                    value=cst.SimpleString(
+                        value=f'"""{docstring}"""',
+                        lpar=[],
+                        rpar=[],
                     ),
+                    semicolon=cst.MaybeSentinel.DEFAULT,
+                ),
+            ],
+            leading_lines=[],
+            trailing_whitespace=cst.TrailingWhitespace(
+                whitespace=cst.SimpleWhitespace(
+                    value="",
+                ),
+                comment=None,
+                newline=cst.Newline(
+                    value=None,
+                ),
+            ),
+        )
+
+        if isinstance(updated_node.body, cst.IndentedBlock):
+            if isinstance(updated_node.body.body, list):
+                updated_node.body.body.insert(0, cst_docstring)
+                return updated_node
+            elif isinstance(updated_node.body.body, tuple):
+                # ClassDef instance returns a body parameter of type tuple and
+                # since tuples are immutable, this is a hackish workaround to
+                # return an updated node
+                updated_tuple_body = (cst_docstring,) + updated_node.body.body
+                updated_indent_block = cst.IndentedBlock(
+                    body=updated_tuple_body,
+                    header=updated_node.body.header,
+                    indent=updated_node.body.indent,
+                    footer=updated_node.body.footer,
                 )
-                if isinstance(updated_node.body, cst.IndentedBlock):
-                    updated_node.body.body.insert(0, cst_docstring)
+                return updated_node.with_changes(body=updated_indent_block)
+
         return updated_node

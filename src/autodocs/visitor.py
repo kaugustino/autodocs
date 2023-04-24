@@ -16,6 +16,7 @@ class DocstringCollector(cst.CSTVisitor):
 
     def visit_ClassDef(self, node: cst.ClassDef) -> Optional[bool]:
         self.stack.append(node.name.value)
+        self.docstrings[tuple(self.stack)] = node.get_docstring()
 
     def leave_ClassDef(self, node: cst.ClassDef) -> None:
         self.stack.pop()
