@@ -36,247 +36,19 @@ class DocstringTransformer(cst.CSTTransformer):
             docstring = self.docstrings[key]
             if not docstring:
                 docstring = """EXAMPLE DOCSTRING."""  # insert openai api call
-            return updated_node.with_changes(
-                body=cst.IndentedBlock(
+                cst_docstring = cst.SimpleStatementLine(
                     body=[
-                        cst.SimpleStatementLine(
-                            body=[
-                                cst.Expr(
-                                    value=cst.SimpleString(
-                                        value=f'"""{docstring}"""',
-                                        lpar=[],
-                                        rpar=[],
-                                    ),
-                                    semicolon=cst.MaybeSentinel.DEFAULT,
-                                ),
-                            ],
-                            leading_lines=[],
-                            trailing_whitespace=cst.TrailingWhitespace(
-                                whitespace=cst.SimpleWhitespace(
-                                    value="",
-                                ),
-                                comment=None,
-                                newline=cst.Newline(
-                                    value=None,
-                                ),
+                        cst.Expr(
+                            value=cst.SimpleString(
+                                value=f'"""{docstring}"""',
+                                lpar=[],
+                                rpar=[],
                             ),
-                        ),
-                        cst.SimpleStatementLine(
-                            body=[
-                                cst.Assign(
-                                    targets=[
-                                        cst.AssignTarget(
-                                            target=cst.Name(
-                                                value="lines",
-                                                lpar=[],
-                                                rpar=[],
-                                            ),
-                                            whitespace_before_equal=cst.SimpleWhitespace(
-                                                value=" ",
-                                            ),
-                                            whitespace_after_equal=cst.SimpleWhitespace(
-                                                value=" ",
-                                            ),
-                                        ),
-                                    ],
-                                    value=cst.Call(
-                                        func=cst.Name(
-                                            value="split_lines",
-                                            lpar=[],
-                                            rpar=[],
-                                        ),
-                                        args=[
-                                            cst.Arg(
-                                                value=cst.Name(
-                                                    value="code",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                keyword=None,
-                                                equal=cst.MaybeSentinel.DEFAULT,
-                                                comma=cst.Comma(
-                                                    whitespace_before=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                    whitespace_after=cst.SimpleWhitespace(
-                                                        value=" ",
-                                                    ),
-                                                ),
-                                                star="",
-                                                whitespace_after_star=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                                whitespace_after_arg=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                            ),
-                                            cst.Arg(
-                                                value=cst.Name(
-                                                    value="True",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                keyword=cst.Name(
-                                                    value="keepends",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                equal=cst.AssignEqual(
-                                                    whitespace_before=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                    whitespace_after=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                ),
-                                                comma=cst.MaybeSentinel.DEFAULT,
-                                                star="",
-                                                whitespace_after_star=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                                whitespace_after_arg=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                            ),
-                                        ],
-                                        lpar=[],
-                                        rpar=[],
-                                        whitespace_after_func=cst.SimpleWhitespace(
-                                            value="",
-                                        ),
-                                        whitespace_before_args=cst.SimpleWhitespace(
-                                            value="",
-                                        ),
-                                    ),
-                                    semicolon=cst.MaybeSentinel.DEFAULT,
-                                ),
-                            ],
-                            leading_lines=[],
-                            trailing_whitespace=cst.TrailingWhitespace(
-                                whitespace=cst.SimpleWhitespace(
-                                    value="",
-                                ),
-                                comment=None,
-                                newline=cst.Newline(
-                                    value=None,
-                                ),
-                            ),
-                        ),
-                        cst.SimpleStatementLine(
-                            body=[
-                                cst.Return(
-                                    value=cst.Call(
-                                        func=cst.Name(
-                                            value="tokenize_lines",
-                                            lpar=[],
-                                            rpar=[],
-                                        ),
-                                        args=[
-                                            cst.Arg(
-                                                value=cst.Name(
-                                                    value="lines",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                keyword=None,
-                                                equal=cst.MaybeSentinel.DEFAULT,
-                                                comma=cst.Comma(
-                                                    whitespace_before=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                    whitespace_after=cst.SimpleWhitespace(
-                                                        value=" ",
-                                                    ),
-                                                ),
-                                                star="",
-                                                whitespace_after_star=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                                whitespace_after_arg=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                            ),
-                                            cst.Arg(
-                                                value=cst.Name(
-                                                    value="version_info",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                keyword=None,
-                                                equal=cst.MaybeSentinel.DEFAULT,
-                                                comma=cst.Comma(
-                                                    whitespace_before=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                    whitespace_after=cst.SimpleWhitespace(
-                                                        value=" ",
-                                                    ),
-                                                ),
-                                                star="",
-                                                whitespace_after_star=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                                whitespace_after_arg=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                            ),
-                                            cst.Arg(
-                                                value=cst.Name(
-                                                    value="start_pos",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                keyword=cst.Name(
-                                                    value="start_pos",
-                                                    lpar=[],
-                                                    rpar=[],
-                                                ),
-                                                equal=cst.AssignEqual(
-                                                    whitespace_before=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                    whitespace_after=cst.SimpleWhitespace(
-                                                        value="",
-                                                    ),
-                                                ),
-                                                comma=cst.MaybeSentinel.DEFAULT,
-                                                star="",
-                                                whitespace_after_star=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                                whitespace_after_arg=cst.SimpleWhitespace(
-                                                    value="",
-                                                ),
-                                            ),
-                                        ],
-                                        lpar=[],
-                                        rpar=[],
-                                        whitespace_after_func=cst.SimpleWhitespace(
-                                            value="",
-                                        ),
-                                        whitespace_before_args=cst.SimpleWhitespace(
-                                            value="",
-                                        ),
-                                    ),
-                                    whitespace_after_return=cst.SimpleWhitespace(
-                                        value=" ",
-                                    ),
-                                    semicolon=cst.MaybeSentinel.DEFAULT,
-                                ),
-                            ],
-                            leading_lines=[],
-                            trailing_whitespace=cst.TrailingWhitespace(
-                                whitespace=cst.SimpleWhitespace(
-                                    value="",
-                                ),
-                                comment=None,
-                                newline=cst.Newline(
-                                    value=None,
-                                ),
-                            ),
+                            semicolon=cst.MaybeSentinel.DEFAULT,
                         ),
                     ],
-                    header=cst.TrailingWhitespace(
+                    leading_lines=[],
+                    trailing_whitespace=cst.TrailingWhitespace(
                         whitespace=cst.SimpleWhitespace(
                             value="",
                         ),
@@ -285,8 +57,7 @@ class DocstringTransformer(cst.CSTTransformer):
                             value=None,
                         ),
                     ),
-                    indent=None,
-                    footer=[],
                 )
-            )
+                if isinstance(updated_node.body, cst.IndentedBlock):
+                    updated_node.body.body.insert(0, cst_docstring)
         return updated_node
