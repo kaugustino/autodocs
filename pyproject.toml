@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "Python cli package that uses OpenAI GPT-3.5 to generate docstrings and docs."
 authors = ["Augustino, K"]
 readme = "README.md"
+packages = [
+    { include = "autodocs", from = "src" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -11,9 +14,11 @@ openai = "^0.27.4"
 click = "^8.1.3"
 libcst = "^0.4.9"
 
-
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.2.2"
+
+[tool.poetry.scripts]
+autodocs = "autodocs.cli:main"
 
 [build-system]
 requires = ["poetry-core"]
