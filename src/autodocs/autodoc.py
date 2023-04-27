@@ -5,9 +5,11 @@ from autodocs.transformer import DocstringTransformer
 
 
 class Autodoc:
-    def __init__(self, interactive: bool, update: bool):
-        self.interactive_flag: bool = interactive
-        self.update_flag: bool = update
+    """Autodoc class interacts with the libcst library."""
+
+    def __init__(self, interactive_flag: bool, update_flag: bool):
+        self.interactive_flag: bool = interactive_flag
+        self.update_flag: bool = update_flag
         self.source_trees: Dict[str, cst.Module] = {}
         self.modified_source_trees: Dict[str, cst.Module] = {}
 
@@ -22,10 +24,13 @@ class Autodoc:
         source_tree = self.source_trees[filename]
         source_tree.visit(visitor)
 
-        transformer = DocstringTransformer(visitor.docstrings)
+        transformer = DocstringTransformer(
+            visitor.docstrings, self.interactive_flag, self.update_flag
+        )
+
+        # Must create new dict because original source tree does not update
+        # changes to tuples since they are immutable
         self.modified_source_trees[filename] = source_tree.visit(transformer)
 
-    def update_file_content(self, filename: str) -> None:
-        new_file_content = self.modified_source_trees[filename].code
-        with open(filename, "w") as file:
-            file.write(new_file_content)
+    def retrieve_modified_tree_code(self, filename: str) -> str:
+        return self.modified_source_trees[filename].code
