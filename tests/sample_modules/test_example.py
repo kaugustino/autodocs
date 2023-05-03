@@ -1,4 +1,6 @@
 class Example:
+    """Example class docstring."""
+
     def __init__(self):
         """Test original docstring."""
         pass
