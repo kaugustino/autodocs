@@ -62,10 +62,9 @@ class DocstringTransformer(cst.CSTTransformer):
         return updated_node
 
     def remove_docstring_class_def(self, updated_node: cst.CSTNode) -> cst.CSTNode:
-        updated_body_list = list(updated_node.body.body)
-        updated_body_list.pop(0)
+        updated_tuple_body = updated_node.body.body[1:]
         updated_indent_block = cst.IndentedBlock(
-            body=tuple(updated_body_list),
+            body=updated_tuple_body,
             header=updated_node.body.header,
             indent=updated_node.body.indent,
             footer=updated_node.body.footer,
